@@ -15,7 +15,7 @@ services:
       - 8000:8000
       - 5678:5678
     depends_on:
-      - application
+      - db
 
   nginx:
     image: nginx
