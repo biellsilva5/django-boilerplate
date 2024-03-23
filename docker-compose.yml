@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  application:
+    image: application
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    command: ["sh", "-c", "pip install debugpy -t /tmp && python /tmp/debugpy --listen 0.0.0.0:5678 manage.py runserver 0.0.0.0:8000 --nothreading --noreload"]
+    volumes:
+      - ./src:/app
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+      - 5678:5678
+    depends_on:
+      - application
+
+  nginx:
+    image: nginx
+    build: ./docker/nginx
+    volumes:
+      - ./src/static:/usr/src/app/
+    ports:
+      - "80:80"
+    depends_on:
+      - application
+  
+  db:
+    image: postgres:16
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    
+
+volumes:
+  db_volume:
