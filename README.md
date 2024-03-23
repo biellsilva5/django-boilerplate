@@ -66,7 +66,14 @@ src/
 Autenticação está sendo gerada a partir da manipulação do modelo de usuário. \
 Rotas para autenticação podem serem encontradas em `users.urls`
 
-
+## Infraestrutura
+Através do docker compose os seguintes serviços sobem:
+- application\
+Através do `gunicorn` está servindo o django
+- nginx\
+Realizando proxy reverso para a porta do `gunicorn` sem loadbalancer
+- db \
+Banco de dados PostgresSQL
 
 ## Autor
 Lucas Silva - [LinkedIn](https://www.linkedin.com/in/lucas-gabriel-vieira-silva/)
