@@ -126,7 +126,7 @@ LOGGING = {
             'level': 'WARNING',
             'class': 'logging.FileHandler',
             'formatter': 'trace_formatter',
-            'filename': 'app.log',
+            'filename': './app.log',
         },
         'console': {
             'class': 'logging.StreamHandler',
