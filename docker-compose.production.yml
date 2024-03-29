@@ -10,3 +10,95 @@ services:
       - .env
     ports:
       - 8000:8000
+    depends_on:
+      - db
+      - jaeger-all
+    networks:
+      - dockernet
+  
+  nginx:
+    image: nginx
+    build: ./docker/nginx
+    volumes:
+      - ./src/static:/usr/src/app/
+    ports:
+      - "80:80"
+    depends_on:
+      - application
+    networks:
+      - dockernet
+  
+  db:
+    image: postgres:16
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - dockernet
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    volumes:
+      - ./docker/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090
+    networks:
+      - dockernet
+  
+  promtail:
+    image: grafana/promtail:2.5.0
+    volumes:
+      - ./docker/promtail/promtail.yaml:/etc/promtail/promtail.yaml
+      - ./src/app.log:/var/log/app.log
+    command: --config.file=/etc/promtail/promtail.yaml
+    depends_on:
+      - application
+    networks:
+      - dockernet
+  
+  jaeger-all:
+    image: jaegertracing/all-in-one:1.32
+    ports:
+      - 16686:16686
+      - 6831:6831
+    networks:
+      - dockernet
+
+  grafana:
+    build:
+      context: ./docker/grafana
+      dockerfile: ./Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana/dashboard.yaml:/etc/grafana/provisioning/datasources/dashboard.yaml
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - loki
+      - prometheus
+      - jaeger-all
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: "/var/lib/grafana/dashboards/main-dashboard.json"
+    networks:
+      - dockernet
+
+  loki:
+    image: grafana/loki:2.5.0
+    ports:
+      - "3100:3100"
+    depends_on:
+      - promtail
+    networks:
+      - dockernet
+
+volumes:
+  db_volume:
+
+networks:
+  dockernet:
+    driver: bridge

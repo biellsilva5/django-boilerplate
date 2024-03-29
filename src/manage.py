@@ -3,11 +3,14 @@
 import os
 import sys
 
+from utils.debugger import initialize_debugger
+from utils.tracking import instrument_app
 
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'setup.settings')
+    instrument_app()
     
     try:
         from django.core.management import execute_from_command_line
@@ -17,6 +20,11 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    print(sys.argv)
+    
+    if 'runserver' in sys.argv:
+        initialize_debugger()
+        
     execute_from_command_line(sys.argv)
 
 

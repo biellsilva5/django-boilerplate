@@ -1,3 +1,13 @@
 django>=5.0,<5.1
+django-prometheus>=2.3,<2.4
 gunicorn>=21.2,<21.3
-psycopg2-binary==2.9.9
+psycopg2==2.9.9
+debugpy>=1.8.1
+opentelemetry-api>=1.23,<1.24
+opentelemetry-sdk>=1.23,<1.24
+opentelemetry-exporter-otlp>=1.23,<1.24
+opentelemetry-exporter-jaeger>=1.21,<1.22
+opentelemetry-instrumentation==0.44b0
+opentelemetry-instrumentation-django==0.44b0
+opentelemetry-instrumentation-psycopg2==0.44b0
+opentelemetry-instrumentation-logging==0.44b0
